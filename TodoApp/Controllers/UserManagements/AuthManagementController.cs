@@ -6,6 +6,8 @@ using TodoApp.Configuration;
 using TodoApp.Dtos.Requests.UserManagements;
 using TodoApp.Dtos.Responses.Base;
 using TodoApp.Dtos.Responses.UserManagement;
+using TodoApp.ErrorCodes;
+using TodoApp.Extensions;
 
 namespace TodoApp.Controllers.UserManagements
 {
@@ -28,7 +30,12 @@ namespace TodoApp.Controllers.UserManagements
         {
             var response = new BaseResponseDto<RegistrationResponseDto>();
 
-            // ToDo: implement registraion.
+            var existUser = await _userManager.FindByEmailAsync(user.Email);
+
+            if (existUser is not null)
+            {
+                response.AddValidationError(nameof(user.Email), ValidationErrorCode.AlreadyExist);
+            }
 
             var registrationResponse = new RegistrationResponseDto
             {

@@ -4,5 +4,6 @@ namespace TodoApp.ErrorCodes
     {
         public const string Required = "sys-100";
         public const string InvalidFormat = "sys-101";
+        public const string AlreadyExist = "sys-102";
     }
 }

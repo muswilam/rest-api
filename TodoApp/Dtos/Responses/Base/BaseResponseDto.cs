@@ -6,7 +6,7 @@ namespace TodoApp.Dtos.Responses.Base
     {
         public bool Success { get; set; }
 
-        public IEnumerable<string> Errors { get; set; } = new List<string>();
+        public List<ErrorDto> Errors { get; set; } = new List<ErrorDto>();
 
         public T Result { get; set; }
     }

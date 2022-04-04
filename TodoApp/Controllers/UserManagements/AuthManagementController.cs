@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,14 +27,6 @@ namespace TodoApp.Controllers.UserManagements
         public async Task<IActionResult> Register([FromBody] UserRegistraionDto user)
         {
             var response = new BaseResponseDto<RegistrationResponseDto>();
-
-            // ToDo: Stop auto binding to return my custom errors.
-            if (!ModelState.IsValid)
-            {
-                response.Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return Ok(response);
-            }
 
             // ToDo: implement registraion.
 

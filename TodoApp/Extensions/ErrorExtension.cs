@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
-using TodoApp.Dtos.Requests.UserManagements;
+using TodoApp.Dtos.Requests.UserManagement;
 using TodoApp.Dtos.Responses.Base;
 using TodoApp.ErrorCodes;
 
@@ -35,9 +35,6 @@ namespace TodoApp.Extensions
 
                 switch (error.Code)
                 {
-                    case nameof(identityError.InvalidUserName):
-                        respnse.AddValidationError(nameof(UserBaseDto.UserName), ValidationErrorCode.InvalidUserName);
-                        break;
                     case nameof(identityError.PasswordRequiresDigit):
                         respnse.AddValidationError(nameof(UserBaseDto.Password), ValidationErrorCode.PasswordRequiresDigit);
                         break;

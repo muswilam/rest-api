@@ -12,5 +12,6 @@ namespace TodoApp.ErrorCodes
         public const string PasswordRequiresUpper = "val-107";
         public const string PasswordTooShort = "val-108";
         public const string InvalidFormat = "val-109";
+        public const string NotFound = "val-110";
     }
 }

@@ -12,9 +12,11 @@ Packages:
 	Identity UI: dotnet add package Microsoft.AspNetCore.Identity.UI
 
 Identity Error Codes Link:
+
 	https://stackoverflow.com/questions/40583707/list-of-error-cases-in-use-usermanager-createasyncuser-password
 
 Identity built-in Error Codes List:
+
     -DefaultError
     -DuplicateEmail
     -DuplicateName

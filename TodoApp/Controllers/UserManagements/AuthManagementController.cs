@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TodoApp.Configuration;
-using TodoApp.Dtos.Requests.UserManagements;
+using TodoApp.Dtos.Requests.UserManagement;
 using TodoApp.Dtos.Responses.Base;
 using TodoApp.Dtos.Responses.UserManagement;
 using TodoApp.ErrorCodes;
@@ -33,21 +33,21 @@ namespace TodoApp.Controllers.UserManagements
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] UserRegistraionDto user)
+        public async Task<IActionResult> Register([FromBody] UserRegistraionRequestDto user)
         {
             var response = new BaseResponseDto<RegistrationResponseDto>();
 
-            var existEmail = await _userManager.FindByEmailAsync(user.Email);
-            var existUserName = await _userManager.FindByNameAsync(user.UserName);
+            var emailExist = await _userManager.FindByEmailAsync(user.Email);
+            var usernameExist = await _userManager.FindByNameAsync(user.UserName);
 
             // business validation.
 
-            if (existEmail is not null)
+            if (emailExist is not null)
             {
                 response.AddValidationError(nameof(user.Email), ValidationErrorCode.AlreadyExist);
             }
 
-            if (existUserName is not null)
+            if (usernameExist is not null)
             {
                 response.AddValidationError(nameof(user.UserName), ValidationErrorCode.AlreadyExist);
             }
@@ -70,14 +70,39 @@ namespace TodoApp.Controllers.UserManagements
                 return BadRequest(response);
             }
 
-
-            var registrationResponse = new RegistrationResponseDto
+            response.Result = new RegistrationResponseDto
             {
-                Token = "dsdsdssdsdd"
+                Token = GenerateJwtToken(newUser)
             };
 
-            response.Success = true;
-            response.Result = registrationResponse;
+            return Ok(response);
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto user)
+        {
+            var response = new BaseResponseDto<LoginResponseDto>();
+
+            var userExist = await _userManager.FindByEmailAsync(user.Email);
+
+            if (userExist is null)
+            {
+                response.AddBusinessError(BusinessErrorCode.InvalidLoginCredentials);
+                return BadRequest(response);
+            }
+
+            var isCorrectPassword = await _userManager.CheckPasswordAsync(userExist, user.Password);
+
+            if (!isCorrectPassword)
+            {
+                response.AddBusinessError(BusinessErrorCode.InvalidLoginCredentials);
+                return BadRequest(response);
+            }
+
+            response.Result = new LoginResponseDto
+            {
+                Token = GenerateJwtToken(userExist)
+            };
 
             return Ok(response);
         }

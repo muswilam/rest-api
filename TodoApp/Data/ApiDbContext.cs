@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using TodoApp.Models;
 
 namespace TodoApp.Data
@@ -10,6 +9,7 @@ namespace TodoApp.Data
     public class ApiDbContext : IdentityDbContext
     {
         public virtual DbSet<Item> Items { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public ApiDbContext(DbContextOptions<ApiDbContext> options)
             : base(options)

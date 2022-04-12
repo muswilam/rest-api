@@ -52,3 +52,16 @@ Identity built-in Error Codes List:
     -UserIdNotFound
     -UserNameNotFound
     -UserNotInRole
+
+API Versioning:
+    Evolving the API without breaking the clients who are using it.
+
+API Versioning Types:
+    1. Query String Versioning
+        http://localhost:5000/api/users/1?api-version=1.0
+    2. URI Versioning
+        http://localhost:5000/api/2.0/users
+    3. Media Type Versioning
+        Accept-Type = x-api-version=2.0
+    4. Header Versioning
+        Content-Type = application/json; x-api-version=2.0

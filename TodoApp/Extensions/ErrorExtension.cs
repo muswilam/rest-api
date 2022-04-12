@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security;
 using Microsoft.AspNetCore.Identity;
 using TodoApp.Dtos.Requests.UserManagement;
 using TodoApp.Dtos.Responses.Base;
@@ -8,26 +9,45 @@ namespace TodoApp.Extensions
 {
     public static class ErrorExtension
     {
-        public static void AddValidationError<T>(this BaseResponseDto<T> response, string field, string errorCode)
+        public static void AddValidationError<T>(this BaseResponseDto<T> response, string field, string errorCode, string message = null)
         {
             response.Errors.Add(new ErrorDto
             {
                 IsValidationError = true,
                 Field = field,
-                Codes = new List<string> { errorCode }
+                Codes = new List<ErrorCode>
+                {
+                    new ErrorCode
+                    {
+                        Code = errorCode,
+                        Message = message
+                    }
+                }
             });
         }
 
-        public static void AddBusinessError<T>(this BaseResponseDto<T> response, string errorCode)
+        public static void AddBusinessError<T>(this BaseResponseDto<T> response, string errorCode, string message = null)
         {
             response.Errors.Add(new ErrorDto
             {
                 IsValidationError = false,
-                Codes = new List<string> { errorCode }
+                Codes = new List<ErrorCode>
+                {
+                    new ErrorCode
+                    {
+                        Code = errorCode,
+                        Message = message
+                    }
+                }
             });
         }
 
-        public static void ValidateIdentity<T>(this BaseResponseDto<T> respnse, IEnumerable<IdentityError> errors) 
+        public static void AddError<T>(this BaseResponseDto<T> response, ErrorDto error)
+        {
+            response.Errors.Add(error);
+        }
+
+        public static void ValidateIdentity<T>(this BaseResponseDto<T> respnse, IEnumerable<IdentityError> errors)
         {
             foreach (var error in errors)
             {

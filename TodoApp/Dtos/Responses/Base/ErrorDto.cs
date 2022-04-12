@@ -8,6 +8,6 @@ namespace TodoApp.Dtos.Responses.Base
 
         public string Field { get; set; }
 
-        public List<string> Codes { get; set; } = new List<string>();
+        public List<ErrorCode> Codes { get; set; } = new();
     }
 }

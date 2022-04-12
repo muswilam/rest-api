@@ -19,12 +19,18 @@ namespace TodoApp.Filters
                 {
                     var errorCodes = context.ModelState[field].Errors.Select(e => e.ErrorMessage).ToList();
 
-                    response.Errors.Add(new ErrorDto
+                    var errorDto = new ErrorDto
                     {
                         IsValidationError = true,
-                        Field = field,
-                        Codes = errorCodes
-                    });
+                        Field = field
+                    };
+
+                    errorDto.Codes.AddRange(errorCodes.Select(e => new ErrorCode
+                    {
+                        Code = e
+                    }));
+
+                    response.Errors.Add(errorDto);
                 }
 
                 context.Result = new BadRequestObjectResult(response);

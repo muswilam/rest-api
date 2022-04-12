@@ -125,20 +125,21 @@ namespace TodoApp.Controllers.UserManagements
 
             var verifyTokenResult = await VerifyToken(token);
 
-            if (verifyTokenResult is null)
-            {
-                response.AddBusinessError(BusinessErrorCode.InvalidToken);
-                return BadRequest(response);
-            }
-
             if (verifyTokenResult.Errors.Any())
             {
-                // ToDo: add extension method (addError).
-                verifyTokenResult.Errors.ForEach(e => response.Errors.Add(e));
+                verifyTokenResult.Errors.ForEach(e => response.AddError(e));
                 return BadRequest(response);
             }
 
-            response.Result = verifyTokenResult.Result;
+            var storedRefreshToken = verifyTokenResult.Result;
+
+            // update current token.
+            await UpdateRefreshTokenAsync(storedRefreshToken);
+
+            // generate new token.
+            var user = await _userManager.FindByIdAsync(storedRefreshToken.UserId);
+            response.Result = await GenerateJwtTokenAsync(user);
+
             return Ok(response);
         }
 
@@ -211,16 +212,16 @@ namespace TodoApp.Controllers.UserManagements
                                         .ToArray());
         }
 
-        private async Task<BaseResponseDto<TokenResponseDto>> VerifyToken(TokenRequestDto token)
+        private async Task<BaseResponseDto<RefreshToken>> VerifyToken(TokenRequestDto tokenRequest)
         {
-            var response = new BaseResponseDto<TokenResponseDto>();
+            var response = new BaseResponseDto<RefreshToken>();
 
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             try
             {
                 // 01-validate token is a propper jwt token formatting.
-                var claimsPrincipal = jwtTokenHandler.ValidateToken(token.Token, _tokenValidationParameters, out var validatedToken);
+                var claimsPrincipal = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
 
                 // 02-validate token has been encrypted using the encryption that we have specified.
                 if (validatedToken is JwtSecurityToken jwtSecurityToken)
@@ -231,7 +232,10 @@ namespace TodoApp.Controllers.UserManagements
                                                                    StringComparison.InvariantCultureIgnoreCase);
 
                     if (!isSameEncryption)
-                        return null;
+                    {
+                        response.AddBusinessError(BusinessErrorCode.InvalidToken, "Invalid token.");
+                        return response;
+                    }
                 }
 
                 // 03-validate token expiry date.
@@ -239,14 +243,16 @@ namespace TodoApp.Controllers.UserManagements
 
                 var expiryDate = UnixTimeStampToDateTime(utcLongExpiryDate);
 
-                if (expiryDate > DateTime.UtcNow)
+                var currentDatetime = DateTime.UtcNow;
+
+                if (expiryDate > currentDatetime)
                 {
-                    response.AddBusinessError(BusinessErrorCode.TokenNotExpiredYet);
+                    response.AddBusinessError(BusinessErrorCode.TokenNotExpiredYet, "Token not expired yet.");
                     return response;
                 }
 
                 //04-validate actual token exists in database.
-                var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token.Token);
+                var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == tokenRequest.RefreshToken);
 
                 if (storedToken is null)
                 {
@@ -277,28 +283,28 @@ namespace TodoApp.Controllers.UserManagements
                     return response;
                 }
 
-                // update current token.
-                storedToken.IsUsed = true;
-                _context.RefreshTokens.Update(storedToken);
-                await _context.SaveChangesAsync();
-
-                // generate new token.
-                var user = await _userManager.FindByIdAsync(storedToken.UserId);
-                response.Result = await GenerateJwtTokenAsync(user);
-
+                response.Result = storedToken;
                 return response;
             }
             catch (Exception ex)
             {
-                return null;
+                response.AddBusinessError(BusinessErrorCode.InvalidToken, "Invalid token.");
+                return response;
             }
+        }
+
+        private async Task UpdateRefreshTokenAsync(RefreshToken refreshToken)
+        {
+            refreshToken.IsUsed = true;
+            _context.RefreshTokens.Update(refreshToken);
+            await _context.SaveChangesAsync();
         }
 
         private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             // utc time is an integer (long) number of seconds from the 1970/1/1 till now. 
             var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            return dateTimeVal.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
         }
         #endregion
     }

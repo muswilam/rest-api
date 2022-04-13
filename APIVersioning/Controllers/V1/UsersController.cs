@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using APIVersioning.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace APIVersioning.Controllers
+namespace APIVersioning.Controllers.V1
 {
     [ApiController]
     [Route("api/users")]
+    [ApiVersion("1.0")]
     public class UsersController : ControllerBase
     {
         [HttpGet]
@@ -13,11 +14,11 @@ namespace APIVersioning.Controllers
         {
             // mimiking db operation.
 
-            var users = new List<User>
+            var users = new List<UserV1>
             {
-                new User { Id = 1, Name = "Sully" },
-                new User { Id = 2, Name = "Mario" },
-                new User { Id = 3, Name = "Emi" }
+                new UserV1 { Id = 1, Name = "Sully" },
+                new UserV1 { Id = 2, Name = "Mario" },
+                new UserV1 { Id = 3, Name = "Emi" }
             };
 
             return Ok(users);

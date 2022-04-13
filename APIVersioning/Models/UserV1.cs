@@ -1,6 +1,6 @@
 namespace APIVersioning.Models
 {
-    public class User
+    public class UserV1
     {
         public int Id { get; set; }
 

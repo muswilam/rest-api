@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace APIVersioning
@@ -31,6 +25,20 @@ namespace APIVersioning
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "APIVersioning", Version = "v1" });
+            });
+
+            // updating the middleware to use versioning.
+            services.AddApiVersioning(options =>
+            {
+                // incase that not specified the api version in url,
+                // it will automalically adding it to the url.
+                options.AssumeDefaultVersionWhenUnspecified = true;
+
+                // the default api version applied to services that don't have explicit versions.
+                options.DefaultApiVersion = ApiVersion.Default;
+
+                // return all available api versions.
+                options.ReportApiVersions = true;
             });
         }
 

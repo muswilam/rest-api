@@ -1,15 +1,19 @@
 
 Packages:
 	
-	EFCore Sqlite: dotnet add package Microsoft.EntityFrameworkCore.Sqlite
-	
-	EFCore Tools: dotnet add package Microsoft.EntityFrameworkCore.Tools 
+    TodoApp:
+        EFCore Sqlite: dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+        
+        EFCore Tools: dotnet add package Microsoft.EntityFrameworkCore.Tools 
 
-    JWT: dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+        JWT: dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 
-	Identity: dotnet add package Microsoft.AspNetCore.Identity.ENtityFrameworkCore
+        Identity: dotnet add package Microsoft.AspNetCore.Identity.ENtityFrameworkCore
 
-	Identity UI: dotnet add package Microsoft.AspNetCore.Identity.UI
+        Identity UI: dotnet add package Microsoft.AspNetCore.Identity.UI
+
+    APIVersioing:
+        Versioning: dotnet add package Microsoft.AspNetCore.Mvc.Versioning
 
 Identity Error Codes Link:
 
@@ -62,6 +66,13 @@ API Versioning Types:
     2. URI Versioning
         http://localhost:5000/api/2.0/users
     3. Media Type Versioning
-        Accept-Type = x-api-version=2.0
+        Accept = x-api-version=2.0
     4. Header Versioning
         Content-Type = application/json; x-api-version=2.0
+
+API Versioning Tips:
+    1. Install microsoft versining package.
+    2. add ApiVersioning to ConfigureServices.
+    3. Once we added the ApiVersioning to the ConfigureServices it will accept 
+       api-version 1.0 by default in query string (if not passed it it will response with
+       bad request ).

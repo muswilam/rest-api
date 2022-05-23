@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace APIVersioning.Controllers.V2
 {
     [ApiController]
-    [Route("api/v{version:apiVersion}/users")]
+    // [Route("api/v{version:apiVersion}/users")] specifying version in URI.
+    [Route("api/users")]
     [ApiVersion("2.0")]
     public class UsersController : ControllerBase
     {

@@ -66,9 +66,10 @@ API Versioning Types:
     2. URI Versioning
         http://localhost:5000/api/2.0/users
     3. Media Type Versioning
-        Accept = x-api-version=2.0
+        Accept = application/json; api-version=2.0
+        Content-Type = application/json; api-version=2.0
     4. Header Versioning
-        Content-Type = application/json; x-api-version=2.0
+        customer header: api-version = 2.0
 
 API Versioning Tips:
     1. Install microsoft versining package.
@@ -76,3 +77,6 @@ API Versioning Tips:
     3. Once we added the ApiVersioning to the ConfigureServices it will accept 
        api-version 1.0 by default in query string (if not passed it it will response with
        bad request ).
+    4. Tag old controller version that we have to remove it as Deprecated.
+        Once calling that api it will show in the header that it's deprecated.
+        Deprecated means: it's gonna be removed soon and it won't be used anymore.
